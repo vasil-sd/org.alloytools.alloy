@@ -125,17 +125,21 @@ public class AlloyClassicFacade implements Alloy {
 
 						@Override
 						public List<TRun> getRuns() {
+							AlloyModule THIS = this;
 							return module.getAllCommands()
 								.stream()
 								.filter(c -> !c.isCheck())
+								.map(r -> (TRun) new AbstractCommand(this, r))
 								.collect(Collectors.toList());
 						}
 
 						@Override
 						public List<TCheck> getChecks() {
+							AlloyModule THIS = this;
 							return module.getAllCommands()
 								.stream()
 								.filter(c -> c.isCheck())
+								.map(r -> (TCheck) new AbstractCommand(this, r))
 								.collect(Collectors.toList());
 						}
 
@@ -178,6 +182,11 @@ public class AlloyClassicFacade implements Alloy {
 						public void usedOption(String optionKey) {
 							// TODO Auto-generated method stub
 
+						}
+
+						@Override
+						public AlloyCompiler getCompiler() {
+							return compiler();
 						}
 					};
 				} catch (Exception e) {
@@ -246,6 +255,12 @@ public class AlloyClassicFacade implements Alloy {
 								public String toString() {
 									return line() + "," + column() + "# " + getMessage();
 								}
+
+								@Override
+								public int span() {
+									// TODO Auto-generated method stub
+									return 0;
+								}
 							});
 						}
 
@@ -269,6 +284,11 @@ public class AlloyClassicFacade implements Alloy {
 							// TODO Auto-generated method stub
 
 						}
+
+						@Override
+						public AlloyCompiler getCompiler() {
+							return compiler();
+						}
 					};
 				}
 			}
@@ -289,6 +309,12 @@ public class AlloyClassicFacade implements Alloy {
 			@Override
 			public AlloyModule compile(String path) {
 				return compileSource(resolver.resolve(path));
+			}
+
+			@Override
+			public String resolve(String path) {
+				// TODO Auto-generated method stub
+				return null;
 			}
 
 		};

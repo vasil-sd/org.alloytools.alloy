@@ -42,7 +42,7 @@ public class AlloyImplTest {
 
 		for (TRun run : module.getRuns()) {
 			for (AlloySolver solver : ai.getSolvers()) {
-				AlloySolution solution = solver.run(module, null, run);
+				AlloySolution solution = solver.run(run, null);
 				assertTrue(solution.iterator()
 					.hasNext());
 			}
@@ -58,7 +58,7 @@ public class AlloyImplTest {
 			.get(0);
 		TRun run = module.getRuns()
 			.get(0);
-		AlloySolution solution = solver.run(module, null, run);
+		AlloySolution solution = solver.run(run, null);
 		TSig B = module.getSig("B")
 			.get();
 			
@@ -103,10 +103,11 @@ public class AlloyImplTest {
 			.get(0);
 		for (TRun run : module.getRuns()) {
 
-			AlloySolution solution = solver.run(module, null, run);
+			AlloySolution solution = solver.run(run, null);
 			List<Integer> collect = solution.stream()
 				.map(instance -> instance.getVariable("two", "y")
 					.scalar()
+					.orElseThrow(RuntimeException::new)
 					.toInt())
 				.sorted()
 				.collect(Collectors.toList());
@@ -125,7 +126,7 @@ public class AlloyImplTest {
 		TRun run = module.getRuns()
 			.get(0);
 
-		AlloySolution solution = solver.run(module, null, run);
+		AlloySolution solution = solver.run(run, null);
 		assertFalse(solution.isSatisfied());
 		solution.iterator()
 			.next();
@@ -143,7 +144,7 @@ public class AlloyImplTest {
 			.get(0);
 		for (TRun run : module.getRuns()) {
 
-			AlloySolution solution = solver.run(module, null, run);
+			AlloySolution solution = solver.run(run, null);
 
 			for (AlloyInstance instance : solution) {
 
@@ -173,17 +174,20 @@ public class AlloyImplTest {
 
 		for (TRun run : module.getRuns()) {
 
-			AlloySolution solution = solver.run(module, null, run);
+			AlloySolution solution = solver.run(run, null);
 
 			for (AlloyInstance instance : solution) {
 				int x = instance.getVariable(run.getName(), "x")
 					.scalar()
+					.orElseThrow(Exception::new)
 					.toInt();
 				int y = instance.getVariable(run.getName(), "y")
 					.scalar()
+					.orElseThrow(Exception::new)
 					.toInt();
 				int z = instance.getVariable(run.getName(), "z")
 					.scalar()
+					.orElseThrow(Exception::new)
 					.toInt();
 				System.out.println("x+y=z : " + x + "+" + y + "=" + z);
 				assertEquals(z, x + y);
@@ -201,7 +205,7 @@ public class AlloyImplTest {
 			.get(0);
 		for (TRun run : module.getRuns()) {
 
-			AlloySolution solution = solver.run(module, null, run);
+			AlloySolution solution = solver.run(run, null);
 			// TSig B = module.getSig("B").get();
 
 			for (AlloyInstance instance : solution) {
@@ -223,7 +227,7 @@ public class AlloyImplTest {
 
 		for (TRun run : module.getRuns()) {
 
-			AlloySolution solution = solver.run(module, null, run);
+			AlloySolution solution = solver.run(run, null);
 
 			TSig B = module.getSig("B")
 				.get();

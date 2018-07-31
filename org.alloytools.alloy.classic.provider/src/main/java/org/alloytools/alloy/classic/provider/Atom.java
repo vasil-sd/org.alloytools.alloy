@@ -39,11 +39,6 @@ public class Atom implements IAtom {
 	}
 
 	@Override
-	public Object getValue() {
-		return atom;
-	}
-
-	@Override
 	public String toString() {
 		return name;
 	}

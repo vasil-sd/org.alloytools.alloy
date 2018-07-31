@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.alloytools.alloy.core.api.TColumnType;
 import org.alloytools.alloy.core.api.TField;
-import org.alloytools.alloy.core.api.TRelationType;
 import org.alloytools.alloy.core.api.TSig;
 import org.alloytools.util.table.Table;
 
@@ -627,11 +627,6 @@ public abstract class Sig extends Expr implements Clause, TSig {
             return getFields().stream().filter(f -> f.getName().equals(fieldName)).findAny();
         }
 
-        @Override
-        public String getValuePattern() {
-            // TODO Auto-generated method stub
-            return null;
-        }
     }
 
     // ==============================================================================================================//
@@ -730,11 +725,6 @@ public abstract class Sig extends Expr implements Clause, TSig {
             return Optional.empty();
         }
 
-        @Override
-        public String getValuePattern() {
-            // TODO Auto-generated method stub
-            return null;
-        }
     }
 
     // ==============================================================================================================//
@@ -851,11 +841,6 @@ public abstract class Sig extends Expr implements Clause, TSig {
         }
 
         @Override
-        public TRelationType getType() {
-            return type();
-        }
-
-        @Override
         public TSig getParent() {
             return sig;
         }
@@ -863,6 +848,13 @@ public abstract class Sig extends Expr implements Clause, TSig {
         @Override
         public String getName() {
             return label;
+        }
+
+        @Override
+        public List<TColumnType> getType() {
+            List<TColumnType> types = new ArrayList<>();
+            type.forEach(types::add);
+            return types;
         }
 
     }

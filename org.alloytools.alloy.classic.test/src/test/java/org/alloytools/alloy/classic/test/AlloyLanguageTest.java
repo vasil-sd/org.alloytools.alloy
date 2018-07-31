@@ -77,7 +77,7 @@ public class AlloyLanguageTest {
 	@Test
 	public void testAlloy() {
 		long now = System.currentTimeMillis();
-		AlloySolution solution = solver.run(module, null, run);
+		AlloySolution solution = solver.run(run, null);
 		try {
 			switch (run.getExpects()) {
 			case SATISFIED:

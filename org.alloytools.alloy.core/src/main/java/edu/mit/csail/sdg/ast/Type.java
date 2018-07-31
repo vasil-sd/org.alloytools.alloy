@@ -20,13 +20,13 @@ import static edu.mit.csail.sdg.ast.Sig.UNIV;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.alloytools.alloy.core.api.TColumnType;
-import org.alloytools.alloy.core.api.TRelationType;
 import org.alloytools.alloy.core.api.TSig;
 
 import edu.mit.csail.sdg.alloy4.ConstList;
@@ -48,7 +48,7 @@ import edu.mit.csail.sdg.ast.Sig.PrimSig;
  * B even if the caller later constructs more sigs or subsigs or subsetsigs...
  */
 
-public final class Type implements Iterable<Type.ProductType>, Clause, TRelationType {
+public final class Type implements Iterable<Type.ProductType>, Clause {
 
     // [AM]
     // /** This configuration option is true if we want to automatically cast
@@ -343,7 +343,7 @@ public final class Type implements Iterable<Type.ProductType>, Clause, TRelation
 
         @Override
         public Set<TSig> getSigs() {
-            return new HashSet<>(Arrays.asList(types));
+            return Stream.of(types).collect(Collectors.toSet());
         }
     }
 
@@ -1312,11 +1312,6 @@ public final class Type implements Iterable<Type.ProductType>, Clause, TRelation
             del = "->";
         }
         return sb.toString();
-    }
-
-    @Override
-    public List<TColumnType> columns() {
-        return new ArrayList<>(entries);
     }
 
 }

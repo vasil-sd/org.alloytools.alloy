@@ -8,19 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.alloytools.alloy.classic.provider.AbstractCommand;
 import org.alloytools.alloy.classic.provider.AlloyModuleClassic;
 import org.alloytools.alloy.classic.provider.Atom;
 import org.alloytools.alloy.classic.provider.TupleSet;
 import org.alloytools.alloy.classic.solver.AbstractSolver;
 import org.alloytools.alloy.core.api.Alloy;
 import org.alloytools.alloy.core.api.AlloyModule;
-import org.alloytools.alloy.core.api.TCheck;
+import org.alloytools.alloy.core.api.TCommand;
 import org.alloytools.alloy.core.api.TField;
-import org.alloytools.alloy.core.api.TRun;
 import org.alloytools.alloy.core.api.TSig;
 import org.alloytools.alloy.solver.api.AlloyInstance;
 import org.alloytools.alloy.solver.api.AlloyOptions;
 import org.alloytools.alloy.solver.api.AlloySolution;
+import org.alloytools.alloy.solver.api.AlloySolver;
 import org.alloytools.alloy.solver.api.IAtom;
 import org.alloytools.alloy.solver.api.ITupleSet;
 
@@ -47,11 +48,9 @@ public abstract class AbstractKodkodSolver extends AbstractSolver {
 	}
 
 	@Override
-	public AlloySolution run(AlloyModule module, AlloyOptions optionsOrNull, TRun run) {
-
-		Command command = (Command) run;
-
-		return command(module, optionsOrNull, command);
+	public AlloySolution run(TCommand command, AlloyOptions optionsOrNull) {
+		AbstractCommand c = (AbstractCommand) command;
+		return command(command.getModule(), optionsOrNull, c.getOriginalCommand());
 	}
 
 	private AlloySolution command(AlloyModule module, AlloyOptions optionsOrNull, Command command) {
@@ -197,17 +196,26 @@ public abstract class AbstractKodkodSolver extends AbstractSolver {
 				return ai.satisfiable();
 			}
 
+			@Override
+			public AlloySolver getSolver() {
+				return AbstractKodkodSolver.this;
+			}
+
+			@Override
+			public AlloyModule getModule() {
+				return module;
+			}
+
+			@Override
+			public TCommand getCommand() {
+				return command;
+			}
+
 		};
 	}
 
 	protected A4Solution getSolution(Command command, CompModule orig, A4Reporter reporter, A4Options opt) {
 		return TranslateAlloyToKodkod.execute_command(reporter, orig.getAllReachableSigs(), command, opt);
-	}
-
-	@Override
-	public AlloySolution check(AlloyModule module, AlloyOptions options, TCheck command) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
