@@ -17,7 +17,6 @@ public abstract class AbstractSolver implements AlloySolver {
 		this.core = core;
 	}
 
-
 	public Alloy getAlloy() {
 		return core;
 	}
@@ -25,18 +24,18 @@ public abstract class AbstractSolver implements AlloySolver {
 	public String toString() {
 		return getName();
 	}
-	
-	protected AlloyOptions processOptions(AlloyModule module, TCommand command, AlloyOptions optionsOrNull) {
-		
-		AlloyOptions options = optionsOrNull == null ? DTOs.dflt(getOptionsType()) : optionsOrNull;
-		
-        assert getOptionsType().isAssignableFrom(options.getClass()) : options.getClass() + " is invalid option class for " + this;
 
-		Map<String, String> sourceOptions = module.getSourceOptions(command);		
-		DTOs.set(options,sourceOptions);
-		
+	protected AlloyOptions processOptions(AlloyModule module, TCommand command, AlloyOptions optionsOrNull) {
+
+		AlloyOptions options = optionsOrNull == null ? DTOs.dflt(getOptionsType()) : optionsOrNull;
+
+		assert getOptionsType().isAssignableFrom(options.getClass()) : options.getClass()
+			+ " is invalid option class for " + this;
+
+		Map<String, String> sourceOptions = module.getSourceOptions(command);
+		DTOs.set(options, sourceOptions);
+
 		return options;
 	}
 
-	
 }

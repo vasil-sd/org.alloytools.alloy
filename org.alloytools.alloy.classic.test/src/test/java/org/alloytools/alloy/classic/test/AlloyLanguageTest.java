@@ -1,4 +1,4 @@
-package org.alloytools.alloy.test;
+package org.alloytools.alloy.classic.test;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -38,7 +38,8 @@ public class AlloyLanguageTest {
 
 		List<Object[]> result = new ArrayList<>();
 
-		File[] testFiles = IO.getFile("src/main/resources").listFiles();
+		File[] testFiles = IO.getFile("src/test/resources/alloy.tests")
+			.listFiles();
 		List<Alloy> alloys = Services.getServices(Alloy.class);
 
 		for (File f : testFiles) {
@@ -47,7 +48,8 @@ public class AlloyLanguageTest {
 				AlloyCompiler compiler = alloy.compiler();
 				AlloyModule module = compiler.compile(f);
 				if (module == null) {
-					System.out.println(f);
+					System.out.println("Is no module " + f);
+					continue;
 				}
 				if (!module.isValid()) {
 					fail("Compile failed for " + f.getName() + " " + module.getErrors());
@@ -86,6 +88,7 @@ public class AlloyLanguageTest {
 				break;
 			default:
 			case UNKNOWN:
+					fail();
 				break;
 			}
 		} finally {

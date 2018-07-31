@@ -3,7 +3,6 @@
 	org.alloytools.alloy.core;version=latest,\
 	org.alloytools.kodkod.core;version=latest,\
 	org.alloytools.util;version=latest,\
-	org.alloytools.alloy.classic.provider;version=latest,\
 	org.alloytools.kodkod.nativesat.shared;version=latest,\
 	org.alloytools.kodkod.nativesat.x86-linux;version=latest,\
 	org.alloytools.kodkod.nativesat.x86-mac;version=latest,\

@@ -13,173 +13,197 @@ import org.alloytools.alloy.solver.api.IAtom;
 import org.alloytools.alloy.solver.api.ITuple;
 import org.alloytools.alloy.solver.api.ITupleSet;
 
-
 public class TupleSet implements ITupleSet {
 
-    final AlloySolution solution;
-    final int           arity;
-    final ITuple[]      tuples;
+	final AlloySolution	solution;
+	final int			arity;
+	final ITuple[]		tuples;
 
-    TupleSet(AlloySolution solution, int arity, Tuple[] tuples) {
-        this.solution = solution;
-        this.tuples = tuples;
-        this.arity = arity;
-    }
+	TupleSet(AlloySolution solution, int arity, Tuple[] tuples) {
+		this.solution = solution;
+		this.tuples = tuples;
+		this.arity = arity;
+	}
 
-    public TupleSet(AlloySolution solution, int arity, List< ? extends IAtom> atoms) {
-        this(solution, arity, toTuples(solution, arity, atoms));
-    }
+	public TupleSet(AlloySolution solution, int arity, List<? extends IAtom> atoms) {
+		this(solution, arity, toTuples(solution, arity, atoms));
+	}
 
-    @Override
-    public int arity() {
-        return arity;
-    }
+	@Override
+	public int arity() {
+		return arity;
+	}
 
-    @Override
-    public ITupleSet join(ITupleSet right) {
+	@Override
+	public ITupleSet join(ITupleSet right) {
 
-        assert solution == right.getSolution();
+		assert solution == right.getSolution();
 
-        int arity = this.arity() + right.arity() - 2;
-        List<IAtom> atoms = new ArrayList<>();
+		int arity = this.arity() + right.arity() - 2;
+		List<IAtom> atoms = new ArrayList<>();
 
+		for (ITuple l : this) {
+			IAtom last = l.last();
 
-        for (ITuple l : this) {
-            IAtom last = l.last();
+			for (ITuple r : right) {
+				IAtom first = r.first();
 
-            for (ITuple r : right) {
-                IAtom first = r.first();
+				if (last == first) {
 
-                if (last == first) {
+					for (int i = 0; i < l.arity() - 1; i++) {
+						atoms.add(l.get(i));
+					}
 
-                    for (int i = 0; i < l.arity() - 1; i++) {
-                        atoms.add(l.get(i));
-                    }
+					for (int i = 1; i < r.arity(); i++) {
+						atoms.add(r.get(i));
+					}
 
-                    for (int i = 1; i < r.arity(); i++) {
-                        atoms.add(r.get(i));
-                    }
+				}
+			}
+		}
 
-                }
-            }
-        }
+		return new TupleSet(solution, arity, atoms);
+	}
 
-        return new TupleSet(solution, arity, atoms);
-    }
+	@Override
+	public ITupleSet product(ITupleSet right) {
 
-    @Override
-    public ITupleSet product(ITupleSet right) {
+		assert solution == right.getSolution();
 
-        assert solution == right.getSolution();
+		List<IAtom> atoms = new ArrayList<>();
+		int arity = this.arity() + right.arity();
+		for (ITuple l : this) {
 
-        List<IAtom> atoms = new ArrayList<>();
-        int arity = this.arity() + right.arity();
-        for (ITuple l : this) {
+			for (ITuple r : right) {
 
-            for (ITuple r : right) {
+				for (int i = 0; i < l.arity(); i++) {
+					atoms.add(l.get(i));
+				}
+				for (int i = 0; i < r.arity(); i++) {
+					atoms.add(r.get(i));
+				}
+			}
+		}
+		return new TupleSet(solution, arity, atoms);
+	}
 
-                for (int i = 0; i < l.arity(); i++) {
-                    atoms.add(l.get(i));
-                }
-                for (int i = 0; i < r.arity(); i++) {
-                    atoms.add(r.get(i));
-                }
-            }
-        }
-        return new TupleSet(solution, arity, atoms);
-    }
+	@Override
+	public TupleSet head() {
+		return split(0, 1);
+	}
 
-    @Override
-    public TupleSet head() {
-        return split(0, 1);
-    }
+	private TupleSet split(int from, int to) {
 
-    private TupleSet split(int from, int to) {
+		assert from > 0;
+		assert from < to;
+		assert to > from;
+		assert to <= arity;
 
-        assert from > 0;
-        assert from < to;
-        assert to > from;
-        assert to <= arity;
+		List<IAtom> atoms = new ArrayList<>();
+		for (ITuple tuple : this) {
+			for (int i = from; i < to; i++)
+				atoms.add(tuple.get(i));
+		}
+		return new TupleSet(solution, to - from, atoms);
+	}
 
-        List<IAtom> atoms = new ArrayList<>();
-        for (ITuple tuple : this) {
-            for (int i = from; i < to; i++)
-                atoms.add(tuple.get(i));
-        }
-        return new TupleSet(solution, to - from, atoms);
-    }
+	@Override
+	public ITupleSet tail() {
+		return split(1, arity);
+	}
 
-    @Override
-    public ITupleSet tail() {
-        return split(1, arity);
-    }
+	@Override
+	public Iterator<ITuple> iterator() {
+		return Arrays.stream(tuples)
+			.iterator();
+	}
 
-    @Override
-    public Iterator<ITuple> iterator() {
-        return Arrays.stream(tuples).iterator();
-    }
+	@Override
+	public int size() {
+		return tuples.length;
+	}
 
-    @Override
-    public int size() {
-        return tuples.length;
-    }
+	@Override
+	public AlloySolution getSolution() {
+		return solution;
+	}
 
-    @Override
-    public AlloySolution getSolution() {
-        return solution;
-    }
+	static Tuple[] toTuples(AlloySolution solution, int arity, List<? extends IAtom> atoms) {
+		Set<Tuple> removeDuplicates = new HashSet<>();
+		for (int i = 0; i < atoms.size(); i += arity) {
+			int base = i;
+			Tuple tuple = new Tuple(solution) {
 
-    static Tuple[] toTuples(AlloySolution solution, int arity, List< ? extends IAtom> atoms) {
-        Set<Tuple> removeDuplicates = new HashSet<>();
-        for (int i = 0; i < atoms.size(); i += arity) {
-            int base = i;
-            Tuple tuple = new Tuple(solution) {
+				@Override
+				public int arity() {
+					return arity;
+				}
 
-                @Override
-                public int arity() {
-                    return arity;
-                }
+				@Override
+				public IAtom get(int i) {
+					return atoms.get(base + i);
+				}
 
-                @Override
-                public IAtom get(int i) {
-                    return atoms.get(base + i);
-                }
+			};
+			removeDuplicates.add(tuple);
+		}
+		ArrayList<Tuple> list = new ArrayList<>(removeDuplicates);
+		Collections.sort(list);
+		Tuple[] result = removeDuplicates.toArray(new Tuple[removeDuplicates.size()]);
+		Arrays.sort(result);
+		return result;
+	}
 
-            };
-            removeDuplicates.add(tuple);
-        }
-        ArrayList<Tuple> list = new ArrayList<>(removeDuplicates);
-        Collections.sort(list);
-        Tuple[] result = removeDuplicates.toArray(new Tuple[removeDuplicates.size()]);
-        Arrays.sort(result);
-        return result;
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+		sb.append("{ ");
 
-        sb.append("{ ");
+		String del = "";
+		for (ITuple tuple : tuples) {
+			sb.append(del);
+			sb.append(tuple);
+			del = ", ";
+		}
 
-        String del = "";
-        for (ITuple tuple : tuples) {
-            sb.append(del);
-            sb.append(tuple);
-            del = ", ";
-        }
+		sb.append(" }");
+		return sb.toString();
+	}
 
-        sb.append(" }");
-        return sb.toString();
-    }
+	public ITupleSet toIdent() {
 
-    public ITupleSet toIdent() {
+		List<IAtom> atoms = new ArrayList<>();
+		for (ITuple t : this) {
+			atoms.add(t.first());
+			atoms.add(t.first());
+		}
+		return new TupleSet(solution, 2, atoms);
+	}
 
-        List<IAtom> atoms = new ArrayList<>();
-        for (ITuple t : this) {
-            atoms.add(t.first());
-            atoms.add(t.first());
-        }
-        return new TupleSet(solution, 2, atoms);
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + arity;
+		result = prime * result + Arrays.hashCode(tuples);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TupleSet other = (TupleSet) obj;
+		if (arity != other.arity)
+			return false;
+		if (!Arrays.equals(tuples, other.tuples))
+			return false;
+		return true;
+	}
 
 }

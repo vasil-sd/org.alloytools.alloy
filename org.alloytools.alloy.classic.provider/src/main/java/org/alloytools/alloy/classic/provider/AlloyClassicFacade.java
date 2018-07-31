@@ -41,8 +41,8 @@ import edu.mit.csail.sdg.parser.CompUtil;
 public class AlloyClassicFacade implements Alloy {
 	static String			JNAME_S		= "\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*";
 	final static Pattern	OPTIONS_P	= Pattern
-			.compile("^--option(\\.(?<glob>[\\p{javaJavaIdentifierPart}*?.-]+))?\\s+(?<key>" + JNAME_S
-					+ ")\\s*=\\s*(?<value>[^\\s]+)\\s*$", Pattern.MULTILINE);
+		.compile("^--option(\\.(?<glob>[\\p{javaJavaIdentifierPart}*?.-]+))?\\s+(?<key>" + JNAME_S
+			+ ")\\s*=\\s*(?<value>[^\\s]+)\\s*$", Pattern.MULTILINE);
 	final Path				home;
 
 	final List<AlloySolver>	solvers		= new ArrayList<>();
@@ -54,7 +54,8 @@ public class AlloyClassicFacade implements Alloy {
 	public AlloyClassicFacade() {
 		try {
 			this.home = Files.createTempDirectory("Alloy-" + getVersion());
-			this.home.toFile().deleteOnExit();
+			this.home.toFile()
+				.deleteOnExit();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,7 +75,10 @@ public class AlloyClassicFacade implements Alloy {
 
 	@Override
 	public Optional<AlloySolver> getSolver(String id) {
-		return getSolvers().stream().filter(s -> s.getId().equals(id)).findAny();
+		return getSolvers().stream()
+			.filter(s -> s.getId()
+				.equals(id))
+			.findAny();
 	}
 
 	@Override
@@ -113,19 +117,26 @@ public class AlloyClassicFacade implements Alloy {
 
 						@Override
 						public Optional<TSig> getSig(String name) {
-							return getSigs().stream().filter(s -> s.getName().equals(name)).findAny();
+							return getSigs().stream()
+								.filter(s -> s.getName()
+									.equals(name))
+								.findAny();
 						}
 
 						@Override
 						public List<TRun> getRuns() {
-							return module.getAllCommands().stream().filter(c -> !c.isCheck())
-									.collect(Collectors.toList());
+							return module.getAllCommands()
+								.stream()
+								.filter(c -> !c.isCheck())
+								.collect(Collectors.toList());
 						}
 
 						@Override
 						public List<TCheck> getChecks() {
-							return module.getAllCommands().stream().filter(c -> c.isCheck())
-									.collect(Collectors.toList());
+							return module.getAllCommands()
+								.stream()
+								.filter(c -> c.isCheck())
+								.collect(Collectors.toList());
 						}
 
 						@Override
@@ -161,6 +172,12 @@ public class AlloyClassicFacade implements Alloy {
 						@Override
 						public Map<String, String> getSourceOptions(TCommand command) {
 							return extractOptions(options, command);
+						}
+
+						@Override
+						public void usedOption(String optionKey) {
+							// TODO Auto-generated method stub
+
 						}
 					};
 				} catch (Exception e) {
@@ -246,6 +263,12 @@ public class AlloyClassicFacade implements Alloy {
 						public Map<String, String> getSourceOptions(TCommand command) {
 							return Collections.emptyMap();
 						}
+
+						@Override
+						public void usedOption(String optionKey) {
+							// TODO Auto-generated method stub
+
+						}
 					};
 				}
 			}
@@ -308,13 +331,13 @@ public class AlloyClassicFacade implements Alloy {
 	private Map<String, String> extractOptions(List<Option> options, TCommand command) {
 		String name = command.getName();
 		return options//
-				.stream()
-				.filter(opt -> {
-					Matcher matcher = opt.glob.matcher(name);
-					return matcher.matches();
-				})//
-				.sorted()
-				.distinct()
-				.collect(Collectors.toMap(option -> option.key, option -> option.value));
+			.stream()
+			.filter(opt -> {
+				Matcher matcher = opt.glob.matcher(name);
+				return matcher.matches();
+			})//
+			.sorted()
+			.distinct()
+			.collect(Collectors.toMap(option -> option.key, option -> option.value));
 	}
 }

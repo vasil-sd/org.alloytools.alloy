@@ -25,15 +25,16 @@ public abstract class AbstractUnsatKodkodSolver extends AbstractKodkodSolver {
 		classic.coreMinimization = m.coreMinimization;
 	}
 
-    @Override
-    protected void setup(KodkodOptions options, A4Solution solution) {
-        super.setup(options, solution);
-        UnsatKodkodOptions unsat = (UnsatKodkodOptions) options;
-        Solver solver = solution.getSolver();
-        solver.options().setLogTranslation(2);
-        solver.options().setCoreGranularity(unsat.coreGranularity);
-        // TODO unsat.coreMinimization?
-    }
-
+	@Override
+	protected void setup(KodkodOptions options, A4Solution solution) {
+		super.setup(options, solution);
+		UnsatKodkodOptions unsat = (UnsatKodkodOptions) options;
+		Solver solver = solution.getSolver();
+		solver.options()
+			.setLogTranslation(2);
+		solver.options()
+			.setCoreGranularity(unsat.coreGranularity);
+		// TODO unsat.coreMinimization?
+	}
 
 }

@@ -47,12 +47,37 @@ public interface AlloyModule {
 	 */
 	List<TCheck> getChecks();
 
+	/**
+	 * Get compiler warnings. Warnings are messages that should be corrected but
+	 * do not stop the module from becoming unusable.
+	 * 
+	 * @return compiler warnings
+	 */
 	List<CompilerMessage> getWarnings();
 
+	/**
+	 * Get fatal compiler errors
+	 * 
+	 * @return compiler errors
+	 */
 	List<CompilerMessage> getErrors();
 
+	/**
+	 * Return true if this module had no fatal errors.
+	 * 
+	 * @return true if no fatal errors
+	 */
 	boolean isValid();
 
-
+	/**
+	 * Get the options in the source for the given command. A source option is
+	 * specified with {@code--option[suffix] option}. The suffix is by default
+	 * {@code *} which implies all.
+	 * 
+	 * @param command
+	 * @return
+	 */
 	Map<String, String> getSourceOptions(TCommand command);
+
+	void usedOption(String optionKey);
 }

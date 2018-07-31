@@ -6,85 +6,83 @@ import org.alloytools.alloy.solver.api.ITupleSet;
 
 abstract class Tuple implements ITuple {
 
+	final AlloySolution solution;
 
-    final AlloySolution solution;
+	public Tuple(AlloySolution solution) {
+		this.solution = solution;
+	}
 
-    public Tuple(AlloySolution solution) {
-        this.solution = solution;
-    }
+	@Override
+	public int compareTo(ITuple o) {
+		int arity = arity();
+		int result = Integer.compare(arity, o.arity());
+		if (result != 0)
+			return result;
 
-    @Override
-    public int compareTo(ITuple o) {
-        int arity = arity();
-        int result = Integer.compare(arity, o.arity());
-        if (result != 0)
-            return result;
+		for (int i = 0; i < arity; i++) {
+			result = get(i).compareTo(o.get(i));
+			if (result != 0) {
+				return result;
+			}
+		}
+		return 0;
+	}
 
-        for (int i = 0; i < arity; i++) {
-            result = get(i).compareTo(o.get(i));
-            if (result != 0) {
-                return result;
-            }
-        }
-        return 0;
-    }
+	@Override
+	public ITupleSet asTupleSet() {
+		Tuple[] tuples = new Tuple[] {
+			this
+		};
+		return new TupleSet(solution, arity(), tuples);
+	}
 
-    @Override
-    public ITupleSet asTupleSet() {
-        Tuple[] tuples = new Tuple[] {
-                                      this
-        };
-        return new TupleSet(solution, arity(), tuples);
-    }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+		String del = "";
+		for (int i = 0; i < arity(); i++) {
+			sb.append(del);
+			sb.append(get(i));
+			del = "->";
+		}
 
-        String del = "";
-        for (int i = 0; i < arity(); i++) {
-            sb.append(del);
-            sb.append(get(i));
-            del = "->";
-        }
+		return sb.toString();
+	}
 
-        return sb.toString();
-    }
+	@Override
+	public int hashCode() {
 
+		int result = 1;
+		int arity = arity();
+		for (int i = 0; i < arity; i++) {
+			Object element = get(i);
+			result = 31 * result + element.hashCode();
+		}
 
-    @Override
-    public int hashCode() {
+		return result;
+	}
 
-        int result = 1;
-        int arity = arity();
-        for (int i = 0; i < arity; i++) {
-            Object element = get(i);
-            result = 31 * result + element.hashCode();
-        }
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (other == null)
+			return false;
 
-        return result;
-    }
+		if (!(other instanceof ITuple))
+			return false;
 
-    @Override
-    public boolean equals(Object other) {
-        if (this == other)
-            return true;
-        if (other == null)
-            return false;
+		ITuple it = (ITuple) other;
+		int arity = this.arity();
+		if (it.arity() != arity)
+			return false;
 
-        if (!(other instanceof ITuple))
-            return false;
-
-        ITuple it = (ITuple) other;
-        int arity = this.arity();
-        if (it.arity() != arity)
-            return false;
-
-        for (int i = 0; i < arity; i++) {
-            if (get(i) != it.get(i))
-                return false;
-        }
-        return true;
-    }
+		for (int i = 0; i < arity; i++) {
+			if (get(i) != it.get(i))
+				return false;
+		}
+		return true;
+	}
 
 }
