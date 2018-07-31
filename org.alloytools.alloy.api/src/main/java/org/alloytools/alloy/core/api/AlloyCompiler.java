@@ -30,4 +30,6 @@ public interface AlloyCompiler {
 	 * @return a Module
 	 */
 	AlloyModule compile(File file);
+
+	String resolve(String path);
 }

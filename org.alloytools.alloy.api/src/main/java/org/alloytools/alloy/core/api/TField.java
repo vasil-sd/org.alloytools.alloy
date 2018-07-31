@@ -1,5 +1,7 @@
 package org.alloytools.alloy.core.api;
 
+import java.util.List;
+
 /**
  * A Field in a sig
  */
@@ -9,7 +11,7 @@ public interface TField {
 	 * 
 	 * @return the type of this relation
 	 */
-	TRelationType getType();
+	List<TColumnType> getType();
 	
 	/**
 	 * Parent type 

@@ -79,5 +79,17 @@ public interface AlloyModule {
 	 */
 	Map<String, String> getSourceOptions(TCommand command);
 
+	/**
+	 * TODO mark an option as used for required
+	 * 
+	 * @param optionKey
+	 */
 	void usedOption(String optionKey);
+
+	/**
+	 * Return the compiler that compiled this module.
+	 * 
+	 * @return the compiler
+	 */
+	AlloyCompiler getCompiler();
 }

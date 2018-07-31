@@ -28,4 +28,11 @@ public interface TCommand {
 	 * @return expects
 	 */
 	Expects getExpects();
+
+	/**
+	 * Get the associated module.
+	 * 
+	 * @return the module
+	 */
+	AlloyModule getModule();
 }
