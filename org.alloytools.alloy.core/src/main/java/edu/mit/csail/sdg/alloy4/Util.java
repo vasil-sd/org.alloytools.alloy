@@ -49,11 +49,70 @@ import edu.mit.csail.sdg.alloy4.ConstList.TempList;
 } )
 public final class Util {
 
+    public final static class FilePath {
+
+        private FilePath() {
+        }
+
+        public static final String fs = System.getProperty("file.separator");
+
+        public static String basename(String s) {
+            int lastSeparatorIndex = s.lastIndexOf(fs);
+            if (lastSeparatorIndex == -1) {
+                return s;
+            }
+            return s.substring(lastSeparatorIndex + 1);
+        }
+
+        public static String dirname(String s) {
+            int lastSeparatorIndex = s.lastIndexOf(fs);
+            if (lastSeparatorIndex == -1) {
+                return ".";
+            }
+            if (lastSeparatorIndex == 0) {
+                return "/";
+            }
+            return s.substring(0, lastSeparatorIndex - 1);
+        }
+
+        public static String basenameWithoutExesnion(String s) {
+
+            String filename = basename(s);
+
+            int extensionIndex = filename.lastIndexOf(".");
+            if (extensionIndex == -1)
+                return filename;
+
+            return filename.substring(0, extensionIndex);
+        }
+
+        public static String removeTrailingSeparator(String s) {
+            if (s.endsWith(fs)) {
+                return s.substring(0, s.length() - 2);
+            }
+
+            return s;
+        }
+
+        public static String makePath(String dir, String name) {
+            return removeTrailingSeparator(dir) + fs + basename(name);
+        }
+
+        public static String makePath(String dir, String name, String ext) {
+            if (ext.startsWith(".")) {
+                ext = ext.substring(1);
+            }
+            return removeTrailingSeparator(dir) + fs + basenameWithoutExesnion(name) + "." + ext;
+        }
+
+    }
+
     /**
      * This constructor is private, since this utility class never needs to be
      * instantiated.
      */
-    private Util() {}
+    private Util() {
+    }
 
     /**
      * Copy the input list, append "element" to it, then return the result as an
@@ -302,13 +361,13 @@ public final class Util {
         return convertLineBreak(ans);
     }
 
-    /** 
-     * Returns the modified date of the given file
-     * (If filename begins with Util.jarPrefix() returns 0) 
+    /**
+     * Returns the modified date of the given file (If filename begins with
+     * Util.jarPrefix() returns 0)
      */
-    public static long getModifiedDate(String filename){
+    public static long getModifiedDate(String filename) {
         boolean fromJar = filename.startsWith(jarPrefix());
-        return fromJar ? 0 : new File(filename).lastModified(); 
+        return fromJar ? 0 : new File(filename).lastModified();
     }
 
     /**
@@ -823,5 +882,7 @@ public final class Util {
     public static int shiftmask(int bitwidth) {
         return bitwidth < 1 ? 0 : (1 << (32 - Integer.numberOfLeadingZeros(bitwidth - 1))) - 1;
     }
+
+
 
 }
