@@ -105,6 +105,39 @@ public final class Util {
             return removeTrailingSeparator(dir) + fs + basenameWithoutExesnion(name) + "." + ext;
         }
 
+        public static String getExtension(String s) {
+            String filename = basename(s);
+
+            int extensionIndex = filename.lastIndexOf(".");
+            if (extensionIndex == -1)
+                return "";
+
+            return filename.substring(extensionIndex + 1);
+        }
+
+        public static String getLowerCaseExtension(String s) {
+            return getExtension(s).toLowerCase(Locale.US);
+        }
+
+        public static boolean isAlloySourceFileName(String name) {
+            String ext = getLowerCaseExtension(name);
+            return ext.endsWith("als") || ext.endsWith("md");
+        }
+
+        public static boolean isXmlFileName(String name) {
+            String ext = getLowerCaseExtension(name);
+            return ext.endsWith("xml");
+        }
+
+        public static boolean isAlloySourceFile(String name) {
+            File f = new File(name);
+            return isAlloySourceFileName(name) && f.isFile() && f.exists();
+        }
+
+        public static boolean isXmlFile(String name) {
+            File f = new File(name);
+            return isXmlFileName(name) && f.isFile() && f.exists();
+        }
     }
 
     /**

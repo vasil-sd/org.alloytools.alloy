@@ -72,7 +72,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -142,6 +141,7 @@ import edu.mit.csail.sdg.alloy4.Pair;
 import edu.mit.csail.sdg.alloy4.Pos;
 import edu.mit.csail.sdg.alloy4.Runner;
 import edu.mit.csail.sdg.alloy4.Util;
+import edu.mit.csail.sdg.alloy4.Util.FilePath;
 import edu.mit.csail.sdg.alloy4.Version;
 import edu.mit.csail.sdg.alloy4.WorkerEngine;
 import edu.mit.csail.sdg.alloy4.XMLNode;
@@ -392,10 +392,12 @@ public final class SimpleGUI implements ComponentListener, Listener {
      * Helper method that returns a hopefully very short name for a file name.
      */
     public static String slightlyShorterFilename(String name) {
-        if (name.toLowerCase(Locale.US).endsWith(".als")) {
-            return Util.FilePath.basenameWithoutExesnion(name);
-        } else if (name.toLowerCase(Locale.US).endsWith(".xml")) {
-            return Util.FilePath.makePath(Util.FilePath.basename(Util.FilePath.dirname(name)), Util.FilePath.basenameWithoutExesnion(name));
+        String basename = FilePath.basenameWithoutExesnion(name);
+        if (FilePath.isAlloySourceFileName(name)) {
+            return basename;
+        } else if (FilePath.isXmlFileName(name)) {
+            String dirname = FilePath.dirname(name);
+            return FilePath.makePath(FilePath.basename(dirname), basename);
         }
         return name;
     }
@@ -580,7 +582,7 @@ public final class SimpleGUI implements ComponentListener, Listener {
     private Runner doBuiltin() {
         if (wrap)
             return wrapMe();
-        File file = getFile(Util.FilePath.makePath(Environment.alloyHome(), "models"));
+        File file = getFile(FilePath.makePath(Environment.alloyHome(), "models"));
         if (file != null) {
             doOpenFile(file.getPath());
         }
@@ -1704,7 +1706,7 @@ public final class SimpleGUI implements ComponentListener, Listener {
                         break;
 
                     default :
-                        if (cmd.endsWith(".als"))
+                        if (FilePath.isAlloySourceFile(cmd))
                             remainingArgs.add(cmd);
                         else {
                             System.out.println("Unknown cmd " + cmd);
@@ -1725,7 +1727,7 @@ public final class SimpleGUI implements ComponentListener, Listener {
 
             @Override
             public void run() {
-                new SimpleGUI(args);
+                new SimpleGUI(remainingArgs.toArray(new String[remainingArgs.size()]));
             }
         });
     }
@@ -2041,13 +2043,12 @@ public final class SimpleGUI implements ComponentListener, Listener {
         frame.setJMenuBar(bar);
 
         // Open the given file, if a filename is given in the command line
-        for (String f : args)
-            if (f.toLowerCase(Locale.US).endsWith(".als")) {
+        for (String f : args) {
+            if (FilePath.isAlloySourceFile(f)) {
                 File file = new File(f);
-                if (file.exists() && file.isFile())
-                    doOpenFile(file.getPath());
+                doOpenFile(file.getPath());
             }
-
+        }
         // Update the title and status bar
         notifyChange();
         text.get().requestFocusInWindow();
