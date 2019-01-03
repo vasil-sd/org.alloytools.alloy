@@ -214,6 +214,11 @@ public final class CLI {
                 }
                 return this;
             }
+
+            @Override
+            public String toString() {
+                return sb.toString();
+            }
         }
 
         private final EchoingStringBuilder sb       = new EchoingStringBuilder();
