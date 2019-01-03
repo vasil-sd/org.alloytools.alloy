@@ -175,6 +175,11 @@ public final class CLI {
             description = "Verbose mode on/off. Default: ${DEFAULT-VALUE}" )
     private boolean  verbose              = false;
 
+    @Option(
+            names = "--generateAC",
+            description = "Generate autocompletion script" )
+    private String   generateAC           = null;
+
     @Parameters(
                 index = "0",
                 arity = "0..*",
@@ -451,6 +456,12 @@ public final class CLI {
             return;
         } else if (commandLine.isVersionHelpRequested()) {
             commandLine.printVersionHelp(System.out);
+            return;
+        }
+
+        if (cli.generateAC != null) {
+            String filename = cli.files != null ? cli.files[0] : cli.generateAC + "_autocomplete";
+            picocli.AutoComplete.main("-n", cli.generateAC, "-o", filename, "edu.mit.csail.sdg.alloy4whole.CLI");
             return;
         }
 
